@@ -1,0 +1,27 @@
+# ==================== PROCfile for Choreo ====================
+# RUNS EVERYTHING: Server + Hourly Workflow + Health Checks
+
+web: sh -c "
+  echo '🚀 Starting AI Affiliate System with TRC20...' &&
+  echo '💎 TRC20 Wallet: $TRC20_WALLET' &&
+  echo '🤖 Mistral AI: $MISTRAL_API_KEY' &&
+  echo '🔄 Starting server and scheduler...' &&
+  
+  # Start the web server in background
+  node index.js --server &
+  SERVER_PID=$!
+  
+  # Wait for server to start
+  sleep 10
+  
+  # Run initial workflow
+  echo '📅 Running initial workflow...' &&
+  curl -s http://localhost:$PORT/run > /dev/null
+  
+  # Run workflow every hour
+  while true; do
+    sleep 3600
+    echo '🔄 Running scheduled workflow...' &&
+    curl -s http://localhost:$PORT/run > /dev/null
+  done
+"
